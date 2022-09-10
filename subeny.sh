@@ -1,27 +1,27 @@
 #!/bin/bash
 
-apt update
-apt install golang curl git unzip python3 python3-pip -y
+#using sublist3r
+sublist3r -d $1 -o out1.txt
 
-#install httprobe
-go install github.com/tomnomnom/httprobe@latest
+#using subfinder
+subfinder -d $1 -o out2.txt
 
-#install assetfinder
-go install github.com/tomnomnom/assetfinder@latest
+#using assetfinder
+assetfinder $1 | tee out3.txt
 
-#install findomains and send binaary to correct folder
-curl -LO https://github.com/findomain/findomain/releases/latest/download/findomain-linux-i386.zip
-unzip findomain-*.zip
-chmod +x findomain
-mv findomain /usr/bin/findomain
+#using findomain
+findomain --target $1 --unique-output out4.txt
 
-#install subfinder and move to right directory
-wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.3/subfinder_2.5.3_linux_amd64.zip
-unzip subfinder_2.5.3_linux_amd64.zip
-mv subfinder /usr/bin/subfinder
+#using amass
+amass enum -d $1 -o out5.txt
 
-git clone https://github.com/aboul3la/Sublist3r.git
-cd Sublist3r
-pip3 install -r requirements.txt
-mv sublist3r.py /opt/sublist3r.py
+#output cleanup and duplicate removal
+cat out2.txt out3.txt out4.txt out5.txt >> out1.txt
+rm out2.txt out3.txt out4.txt out5.txt
+cat out1.txt | sort -u >> out.txt
+rm out1.txt
 
+#check if domains are active
+echo "removing innactive domains"
+cat out.txt | httprobe | tee output.txt
+rm out.txt
