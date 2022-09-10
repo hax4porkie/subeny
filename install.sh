@@ -1,21 +1,26 @@
 #!/bin/bash
 
 apt update
-apt install golang curl git
+apt install golang curl git unzip python3 python3-pip -y
+
+#install httprobe
 go install github.com/tomnomnom/httprobe@latest
-go get -u github.com/tomnomnom/assetfinder
+
+#install assetfinder
+go install github.com/tomnomnom/assetfinder@latest
+
+#install findomains and send binaary to correct folder
 curl -LO https://github.com/findomain/findomain/releases/latest/download/findomain-linux-i386.zip
-unzip findomain-linux-i386.zip
+unzip findomain-*.zip
 chmod +x findomain
 mv findomain /usr/bin/findomain
+
+#install subfinder and move to right directory
+wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.3/subfinder_2.5.3_linux_amd64.zip
+unzip subfinder_2.5.3_linux_amd64.zip
+mv subfinder /usr/bin/subfinder
+
 git clone https://github.com/aboul3la/Sublist3r.git
 cd Sublist3r
-pip install -r requirements.txt
-go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-
-
-
-
-#for amass download from here
-#https://github.com/OWASP/Amass/releases/tag/v3.19.3
-#add binary to your path
+pip3 install -r requirements.txt
+mv sublist3r.py /opt/sublist3r.py
